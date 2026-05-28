@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Videoyy Player</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">Videoyy</div>
+  <div>Tonton Video</div>
+</header>
+
+<div class="container">
+
+  <div class="video-player">
+    <video controls autoplay id="player"></video>
+  </div>
+
+</div>
+
+<script>
+  const path = window.location.pathname;
+  const id = path.split("/").pop();
+
+  const player = document.getElementById("player");
+
+  player.src = "/uploads/" + id;
+</script>
+
+</body>
+</html>
