@@ -86,7 +86,7 @@ fileInput.addEventListener("change", () => {
 
                 url: res.secure_url,
                 created: Date.now()
-
+                views:0
             });
 
         } catch (err) {
