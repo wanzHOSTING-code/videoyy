@@ -1,0 +1,9 @@
+{
+  "name": "videoyy",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "cloudinary": "^2.5.1",
+    "formidable": "^3.5.1"
+  }
+}

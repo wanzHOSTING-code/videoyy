@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Videoyy Player</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+<div class="logo">🎥 Videoyy</div>
+</header>
+
+<main>
+
+<div class="upload-box">
+
+<video
+id="player"
+controls
+width="100%"
+style="border-radius:12px">
+</video>
+
+</div>
+
+</main>
+
+<script>
+
+const params=new URLSearchParams(location.search);
+
+const url=params.get("url");
+
+if(url){
+
+document.getElementById("player").src=url;
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Videoyy</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+<header>
+
+<div class="logo">
+🎥 Videoyy
+</div>
+
+</header>
+
+<main>
+
+<div class="upload-box">
+
+<h1>Upload Video</h1>
+
+<p>
+Upload video dan dapatkan link untuk dibagikan.
+</p>
+
+<input
+type="file"
+id="video"
+accept="video/*"
+hidden
+>
+
+<label for="video" class="btn">
+Pilih Video
+</label>
+
+<div class="progress">
+
+<div
+id="bar"
+class="bar">
+</div>
+
+</div>
+
+<p id="status"></p>
+
+<div
+id="result"
+class="result">
+
+<input
+id="link"
+readonly>
+
+<button id="copy">
+Copy Link
+</button>
+
+</div>
+
+</div>
+
+</main>
+
+<script src="script.js"></script>
+
+</body>
+</html>
