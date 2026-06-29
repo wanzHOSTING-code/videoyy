@@ -1,15 +1,59 @@
+import { db } from "./firebase.js";
+
+import {
+    doc,
+    getDoc,
+    updateDoc,
+    increment
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+const video = document.getElementById("player");
+
 const params = new URLSearchParams(window.location.search);
 
-const url = params.get("url");
+const id = params.get("id");
 
-const player = document.getElementById("player");
+if (!id) {
 
-if (url) {
-    player.src = decodeURIComponent(url);
+    document.body.innerHTML = "<h2>Video tidak ditemukan.</h2>";
+
 } else {
-    document.body.innerHTML = `
-        <h2 style="text-align:center;margin-top:50px;">
-            Video tidak ditemukan.
-        </h2>
-    `;
+
+    loadVideo(id);
+
+}
+
+async function loadVideo(id) {
+
+    const ref = doc(db, "videos", id);
+
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+
+        document.body.innerHTML = "<h2>Video tidak ditemukan.</h2>";
+
+        return;
+
+    }
+
+    const data = snap.data();
+
+    video.src = data.url;
+
+    // Tambah view
+    try {
+
+        await updateDoc(ref, {
+
+            views: increment(1)
+
+        });
+
+    } catch (e) {
+
+        console.log(e);
+
+    }
+
 }
