@@ -1,3 +1,10 @@
+import { db } from "./firebase.js";
+
+import {
+    doc,
+    setDoc
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
 const fileInput = document.getElementById("video");
 const progress = document.querySelector(".progress");
 const bar = document.getElementById("bar");
@@ -49,7 +56,7 @@ fileInput.addEventListener("change", () => {
 
     };
 
-    xhr.onload = () => {
+    xhr.onload = async () => {
 
         if (xhr.status !== 200) {
 
@@ -69,15 +76,37 @@ fileInput.addEventListener("change", () => {
 
         }
 
+        // Buat ID acak
+        const id = Math.random().toString(36).substring(2, 8);
+
+        // Simpan ke Firestore
+        try {
+
+            await setDoc(doc(db, "videos", id), {
+
+                url: res.secure_url,
+                created: Date.now()
+
+            });
+
+        } catch (err) {
+
+            console.error(err);
+
+            status.innerHTML = "❌ Gagal menyimpan database.";
+
+            return;
+
+        }
+
         status.innerHTML = "✅ Upload berhasil!";
 
         progress.style.display = "none";
 
         result.style.display = "block";
 
-        // Link menuju halaman player Videoyy
-        const watchLink =
-            `${location.origin}/watch.html?url=${encodeURIComponent(res.secure_url)}`;
+        // Link pendek
+        const watchLink = `${location.origin}/v/${id}`;
 
         link.value = watchLink;
 
@@ -93,10 +122,18 @@ fileInput.addEventListener("change", () => {
 
 });
 
-copy.onclick = () => {
+copy.onclick = async () => {
 
-    navigator.clipboard.writeText(link.value);
+    try {
 
-    alert("✅ Link berhasil disalin!");
+        await navigator.clipboard.writeText(link.value);
+
+        alert("✅ Link berhasil disalin!");
+
+    } catch {
+
+        alert("❌ Gagal menyalin link.");
+
+    }
 
 };
