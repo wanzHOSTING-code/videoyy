@@ -1,9 +1,3 @@
 {
-  "version": 2,
-  "rewrites": [
-    {
-      "source": "/v/:id",
-      "destination": "/watch.html?id=:id"
-    }
-  ]
+  "version": 2
 }
