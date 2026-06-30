@@ -13,6 +13,7 @@ const result = document.getElementById("result");
 const link = document.getElementById("link");
 const copy = document.getElementById("copy");
 
+// Cloudinary
 const CLOUD_NAME = "dpymglm1v";
 const UPLOAD_PRESET = "videoyy";
 
@@ -25,6 +26,7 @@ fileInput.addEventListener("change", () => {
     progress.style.display = "block";
     result.style.display = "none";
     bar.style.width = "0%";
+    status.innerHTML = "Menyiapkan upload...";
 
     const form = new FormData();
 
@@ -57,7 +59,7 @@ fileInput.addEventListener("change", () => {
 
         if (xhr.status !== 200) {
 
-            status.innerHTML = "Upload gagal.";
+            status.innerHTML = "❌ Upload gagal.";
 
             return;
 
@@ -65,11 +67,20 @@ fileInput.addEventListener("change", () => {
 
         const res = JSON.parse(xhr.responseText);
 
+        if (!res.secure_url) {
+
+            status.innerHTML = "❌ Upload gagal.";
+
+            return;
+
+        }
+
         try {
 
-            // ID unik
+            // Buat ID unik
             const id = crypto.randomUUID();
 
+            // Simpan ke Firestore
             await setDoc(doc(db, "videos", id), {
 
                 url: res.secure_url,
@@ -80,20 +91,20 @@ fileInput.addEventListener("change", () => {
             });
 
             progress.style.display = "none";
-
             result.style.display = "block";
 
-            status.innerHTML = "✅ Upload berhasil";
+            status.innerHTML = "✅ Upload berhasil!";
 
-            link.value = `${location.origin}/v/${id}`;
+            // Link menuju halaman watch
+            link.value = `${location.origin}/watch.html?id=${id}`;
 
         } catch (err) {
 
             console.error(err);
 
-            alert(err);
+            alert(err.message);
 
-            status.innerHTML = err.message;
+            status.innerHTML = "❌ Gagal menyimpan ke Firestore.";
 
         }
 
@@ -101,7 +112,7 @@ fileInput.addEventListener("change", () => {
 
     xhr.onerror = () => {
 
-        status.innerHTML = "Network Error";
+        status.innerHTML = "❌ Terjadi kesalahan jaringan.";
 
     };
 
@@ -111,8 +122,16 @@ fileInput.addEventListener("change", () => {
 
 copy.onclick = async () => {
 
-    await navigator.clipboard.writeText(link.value);
+    try {
 
-    alert("Link berhasil disalin");
+        await navigator.clipboard.writeText(link.value);
+
+        alert("✅ Link berhasil disalin!");
+
+    } catch (err) {
+
+        alert("❌ Gagal menyalin link.");
+
+    }
 
 };
