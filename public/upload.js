@@ -1,6 +1,7 @@
 import { db } from "./firebase.js";
 
 import {
+    collection,
     doc,
     setDoc
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
@@ -76,39 +77,36 @@ fileInput.addEventListener("change", () => {
 
         }
 
-        // Buat ID acak
-        const id = Math.random().toString(36).substring(2, 8);
-
-        // Simpan ke Firestore
         try {
 
-            await setDoc(doc(db, "videos", id), {
+            // Buat dokumen baru dengan ID otomatis Firestore
+            const ref = doc(collection(db, "videos"));
+
+            await setDoc(ref, {
 
                 url: res.secure_url,
-                created: Date.now()
-                views:0
+                publicId: res.public_id,
+                createdAt: Date.now(),
+                views: 0
+
             });
+
+            progress.style.display = "none";
+
+            status.innerHTML = "✅ Upload berhasil!";
+
+            result.style.display = "block";
+
+            // Link pendek
+            link.value = `${location.origin}/v/${ref.id}`;
 
         } catch (err) {
 
             console.error(err);
 
-            status.innerHTML = "❌ Gagal menyimpan database.";
-
-            return;
+            status.innerHTML = "❌ Gagal menyimpan ke Firestore.";
 
         }
-
-        status.innerHTML = "✅ Upload berhasil!";
-
-        progress.style.display = "none";
-
-        result.style.display = "block";
-
-        // Link pendek
-        const watchLink = `${location.origin}/v/${id}`;
-
-        link.value = watchLink;
 
     };
 
