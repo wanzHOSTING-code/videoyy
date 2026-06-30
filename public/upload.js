@@ -1,9 +1,8 @@
 import { db } from "./firebase.js";
 
 import {
-    collection,
-    doc,
-    setDoc
+  doc,
+  setDoc
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
 const fileInput = document.getElementById("video");
@@ -14,7 +13,6 @@ const result = document.getElementById("result");
 const link = document.getElementById("link");
 const copy = document.getElementById("copy");
 
-// Cloudinary
 const CLOUD_NAME = "dpymglm1v";
 const UPLOAD_PRESET = "videoyy";
 
@@ -27,13 +25,12 @@ fileInput.addEventListener("change", () => {
     progress.style.display = "block";
     result.style.display = "none";
     bar.style.width = "0%";
-    status.innerHTML = "Menyiapkan upload...";
 
-    const data = new FormData();
+    const form = new FormData();
 
-    data.append("file", file);
-    data.append("upload_preset", UPLOAD_PRESET);
-    data.append("resource_type", "video");
+    form.append("file", file);
+    form.append("upload_preset", UPLOAD_PRESET);
+    form.append("resource_type", "video");
 
     const xhr = new XMLHttpRequest();
 
@@ -46,12 +43,11 @@ fileInput.addEventListener("change", () => {
 
         if (e.lengthComputable) {
 
-            const percent = (e.loaded / e.total) * 100;
+            const percent = Math.round((e.loaded / e.total) * 100);
 
             bar.style.width = percent + "%";
 
-            status.innerHTML =
-                "Uploading... " + Math.round(percent) + "%";
+            status.innerHTML = `Uploading... ${percent}%`;
 
         }
 
@@ -61,7 +57,7 @@ fileInput.addEventListener("change", () => {
 
         if (xhr.status !== 200) {
 
-            status.innerHTML = "❌ Upload gagal.";
+            status.innerHTML = "Upload gagal.";
 
             return;
 
@@ -69,20 +65,12 @@ fileInput.addEventListener("change", () => {
 
         const res = JSON.parse(xhr.responseText);
 
-        if (!res.secure_url) {
-
-            status.innerHTML = "❌ Upload gagal.";
-
-            return;
-
-        }
-
         try {
 
-            // Buat dokumen baru dengan ID otomatis Firestore
-            const ref = doc(collection(db, "videos"));
+            // ID unik
+            const id = crypto.randomUUID();
 
-            await setDoc(ref, {
+            await setDoc(doc(db, "videos", id), {
 
                 url: res.secure_url,
                 publicId: res.public_id,
@@ -93,20 +81,19 @@ fileInput.addEventListener("change", () => {
 
             progress.style.display = "none";
 
-            status.innerHTML = "✅ Upload berhasil!";
-
             result.style.display = "block";
 
-            // Link pendek
-            link.value = `${location.origin}/v/${ref.id}`;
+            status.innerHTML = "✅ Upload berhasil";
+
+            link.value = `${location.origin}/v/${id}`;
 
         } catch (err) {
 
-    console.error(err);
+            console.error(err);
 
-    alert(err.message);
+            alert(err);
 
-    status.innerHTML = err.message;
+            status.innerHTML = err.message;
 
         }
 
@@ -114,26 +101,18 @@ fileInput.addEventListener("change", () => {
 
     xhr.onerror = () => {
 
-        status.innerHTML = "❌ Terjadi kesalahan jaringan.";
+        status.innerHTML = "Network Error";
 
     };
 
-    xhr.send(data);
+    xhr.send(form);
 
 });
 
 copy.onclick = async () => {
 
-    try {
+    await navigator.clipboard.writeText(link.value);
 
-        await navigator.clipboard.writeText(link.value);
-
-        alert("✅ Link berhasil disalin!");
-
-    } catch {
-
-        alert("❌ Gagal menyalin link.");
-
-    }
+    alert("Link berhasil disalin");
 
 };
