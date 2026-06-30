@@ -102,9 +102,11 @@ fileInput.addEventListener("change", () => {
 
         } catch (err) {
 
-            console.error(err);
+    console.error(err);
 
-            status.innerHTML = "❌ Gagal menyimpan ke Firestore.";
+    alert(err.message);
+
+    status.innerHTML = err.message;
 
         }
 
