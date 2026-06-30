@@ -43,6 +43,9 @@ async function loadVideo(id) {
 
         const data = snap.data();
 
+        console.log(data);
+        alert(data.url);
+
         video.src = data.url;
 
         video.load();
